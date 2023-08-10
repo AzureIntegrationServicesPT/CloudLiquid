@@ -12,6 +12,7 @@ using System.Xml;
 using Newtonsoft.Json.Linq;
 using System.Text;
 using System.Globalization;
+using Confluent.Kafka;
 
 namespace CloudLiquid
 {
@@ -162,10 +163,10 @@ namespace CloudLiquid
         {
             return Convert.ToInt32(data);
         }
-        public static string String(Context context, object data)
-        {
-            return Convert.ToString(data);
-        }
+        // public static string String(Context context, object data)
+        // {
+        //     return Convert.ToString(data);
+        // }
         public static Boolean IsLoop(Context context, Object data)
         {
             if (data is List<Object>)
@@ -415,6 +416,43 @@ namespace CloudLiquid
             DateTime newdate = new DateTime();
             newdate = DateTime.Parse(timestamp.ToString());
             return newdate.ToString(format,new CultureInfo(locale));
+        }
+
+        public static string KafkaProducer(Context context,object input)
+        {
+            try
+            {
+            var config = new ProducerConfig
+            {
+                BootstrapServers = "pkc-zpjg0.eu-central-1.aws.confluent.cloud:9092",
+                SecurityProtocol = SecurityProtocol.SaslSsl,
+                SaslMechanism = SaslMechanism.Plain,
+                SaslUsername = "7RWQ2HJD6PP54EYY",
+                SaslPassword = "kMBuRaBQVl9YkIzKJGfpdKZqCuaY9nJ80GlTZIdQn71vehpVhebj6lt2vmWFMBsm",
+            };
+            var producer = new ProducerBuilder<Null, string>(config).Build();
+            var payload = JsonConvert.SerializeObject(input, jsonSettings);
+            producer.Produce("cpq_dev_qlm_rfq", new Message<Null, string> { Value=payload}, (deliveryReport) =>
+                    {
+                        if (deliveryReport.Error.Code != ErrorCode.NoError) {
+                            Console.WriteLine($"Failed to deliver message: {deliveryReport.Error.Reason}");
+                        }
+                        else {
+                            Console.WriteLine($"Produced event to topic cpq_dev_qlm_rfq");
+                        }
+                    });
+            var queueSize = producer.Flush(TimeSpan.FromSeconds(5));
+            if (queueSize > 0)
+            {
+                Console.WriteLine("WARNING: Producer event queue has " + queueSize + " pending events on exit.");
+            }
+            producer.Dispose();
+            }
+            catch
+            {
+            return "FAIL";
+            }
+            return "OK";
         }
     }
 }

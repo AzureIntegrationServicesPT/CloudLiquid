@@ -17,6 +17,7 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0"/>
     <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0"/>
     <ProjectReference Include = "./ContentFactory/ContentFactory.csproj" />
+    <PackageReference Include="Confluent.Kafka" Version="2.2.0"/>
     <Content Remove="ContentFactory\**" />
     <Compile Remove="ContentFactory\**" />
     <EmbeddedResource Remove="ContentFactory\**" />
