@@ -18,6 +18,8 @@
     <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0"/>
     <ProjectReference Include = "./ContentFactory/ContentFactory.csproj" />
     <PackageReference Include="Confluent.Kafka" Version="2.2.0"/>
+    <PackageReference Include="AvroConvert" Version="3.3.7"/>
+    <PackageReference Include="Confluent.SchemaRegistry.Serdes" Version="1.3.0"/>
     <Content Remove="ContentFactory\**" />
     <Compile Remove="ContentFactory\**" />
     <EmbeddedResource Remove="ContentFactory\**" />

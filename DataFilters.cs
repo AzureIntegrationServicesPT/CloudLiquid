@@ -13,6 +13,8 @@ using Newtonsoft.Json.Linq;
 using System.Text;
 using System.Globalization;
 using Confluent.Kafka;
+using SolTechnology.Avro;
+//using Confluent.SchemaRegistry.Serde;
 
 namespace CloudLiquid
 {
@@ -417,6 +419,30 @@ namespace CloudLiquid
             newdate = DateTime.Parse(timestamp.ToString());
             return newdate.ToString(format,new CultureInfo(locale));
         }
+
+        public static byte[] JsonToAvro(Context context,string input,string codec = null )
+        {
+             byte[] avroObject = AvroConvert.Json2Avro(input);
+             return avroObject;
+        }
+        public static byte[] Avro(Context context,object input,string codec = null )
+        {
+            byte[] avroObject;
+            if (input is Hash)
+            {
+             Console.WriteLine("HASH AVRO");
+             var converted= (IDictionary<string,object>) input;
+             avroObject = AvroConvert.Serialize(converted);
+             return avroObject;
+            }
+            else if(input is Dictionary<string,object>)
+            {
+             Console.WriteLine("DIC AVRO");
+             return null;
+            }
+            return null;
+        }
+        
 
         public static string KafkaProducer(Context context,object input)
         {
